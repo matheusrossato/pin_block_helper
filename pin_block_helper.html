@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h2 id="intro">SWAP PIN Block Helper</h2>
+
+CardID: <input id="cardID"> <button type="button" onclick="decimalizeCardID()">DECIMALIZE</button> <p id="p_cardID_length"></p> </br>
+Decimalized CardID: <p id="p_decimalized_cardID"></p> 
+PIN: <input id="pin"> <button type="button" onclick="doXOR()">I'M FEELING LUCKY</button></br>
+</br>
+PIN for XOR: <p id="p_pinBlock"></p></br>
+PIN Block <input id="input_pinBlock"> <button type="button" onclick="undoXOR()">JUST AN UNLUCKY BASTARD</button></br>
+
+<script type="text/javascript">
+var decimalized_cardID;
+function decimalizeCardID() {
+var inputed_cardID;
+decimalized_cardID = "0000";
+  inputed_cardID = document.getElementById("cardID").value.toString().toUpperCase();
+  if (inputed_cardID.length == 32){
+      inputed_cardID_12digits = inputed_cardID.slice(0,12);
+      for (char of inputed_cardID_12digits) {
+          switch(char) {
+              case 'A':    
+                  char = '0'; 
+                  decimalized_cardID += char;
+                  break;
+              case 'B':
+                  char = '1';
+                  decimalized_cardID += char; 
+                  break;
+              case 'C':
+                  char = '2'; 
+                  decimalized_cardID += char;
+                  break;
+              case 'D':
+                  char = '3';
+                  decimalized_cardID +=char;
+                  break;
+              case 'E':
+                  char = '4';
+                  decimalized_cardID += char; 
+                  break;
+              case 'F':
+                  char = '5'; 
+                  decimalized_cardID += char;
+                  break;
+            default:
+                  decimalized_cardID += char;      
+                  break;           
+        
+      }};
+      //decimalized_cardID = inputed_cardID_12digits
+      //document.getElementById("p_cardID_length").innerHTML = "length: " + inputed_cardID.length ;
+      document.getElementById("p_decimalized_cardID").innerHTML = decimalized_cardID;
+  }
+  else{
+      alert("CARD ID MUST BE 32 CHARS, NOW: " + inputed_cardID.length);
+  }
+  return decimalized_cardID;    
+}
+
+function preparePinXOR(){
+    var inputed_pin, pinXOR;
+  inputed_pin = document.getElementById("pin").value;
+  if (inputed_pin.length != 4) {
+      alert("PIN MUST BE 4 DIGITS, NOW: " + inputed_pin.length);
+  }  
+  pinXOR = "34" + inputed_pin +  "1357902468";
+  document.getElementById("p_pinBlock").innerHTML = pinXOR;
+  return pinXOR;
+}
+
+function doXOR() {
+  xor_decimalized_cardID = decimalizeCardID();
+  var pinForXOR =  preparePinXOR();
+  var pinBlock = "";
+  var i = 0;
+  //alert(xor_decimalized_cardID.length + " " + pinForXOR.length );
+  if (xor_decimalized_cardID.length == 16 && pinForXOR.length ==16){
+    do {
+        xorChar = xor_decimalized_cardID.toString().charAt(i) ^ pinForXOR.toString().charAt(i);
+        //alert("xorChar =" + xorChar + "charCardID = " + xor_decimalized_cardID.toString().charAt(i) + "charPin" + pinForXOR.toString().charAt(i));
+        pinBlock += xorChar;
+        //alert("i= "+ i );
+        i++;
+    }
+    while(i <= xor_decimalized_cardID.length);
+  }
+  else{
+      alert("can't XOR CardID and PIN");
+  }
+  alert(pinBlock);
+  document.getElementById("input_pinBlock").value = pinBlock;
+}
+
+function undoXOR() {
+    var pinBlock = document.getElementById("input_pinBlock").value;
+    var pin = "";
+    var inputed_cardID = document.getElementById("cardID").value.toString();
+    alert("pinBlock= " + pinBlock + " inputed_cardID= " + inputed_cardID);
+    var i = 0;
+    if (inputed_cardID != null){
+        decimalizeCardID();
+    }
+    if (decimalized_cardID.length == 16 && pinBlock.length ==16){
+    do {
+        xorChar = decimalized_cardID.charAt(i) ^ pinBlock.charAt(i);
+        //alert("xorChar =" + xorChar + "charCardID = " + xor_decimalized_cardID.toString().charAt(i) + "charPin" + pinForXOR.toString().charAt(i));
+        alert(xorChar);  
+        switch(xorChar.toString()) {
+              case "10":    
+                  xorChar = 'A'; 
+                  pin += xorChar;
+                  break;
+              case "11":
+                  char = 'B';
+                  pin += xorChar; 
+                  break;
+              case "12":
+                  char = 'C'; 
+                  pin += xorChar;
+                  break;
+              case "13":
+                  char = 'D';
+                  pin += xorChar;
+                  break;
+              case "14":
+                  char = 'E';
+                  pin += xorChar; 
+                  break;
+              case "15":
+                  char = 'F'; 
+                  pin += xorChar;
+                  break;
+            default:
+                  pin += xorChar;      
+                  break;           
+          }
+        //pin += xorChar + " ";
+        //alert("i= "+ i );
+        i++;
+    }
+    while(i <= decimalized_cardID.length);
+  }
+  else{
+      alert("can't XOR CardID and PIN Block");
+  }
+  alert(pin);
+  document.getElementById("pin").value = pin.slice(2,6);
+}
+</script>
+
+</body>
+</html> 
